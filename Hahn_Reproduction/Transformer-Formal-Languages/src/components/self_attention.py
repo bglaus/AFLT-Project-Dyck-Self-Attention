@@ -9,8 +9,12 @@ from torch.autograd import Variable
 import ipdb as pdb
 from src.components.utils import *
 
+def hardmax(scores):
+    idx = torch.argmax(scores, dim=-1, keepdims=True)
+    ret = torch.zeros_like(scores).scatter_(-1, idx, 1.)
+    return ret
 
-def attention(query, key, value, mask=None, dropout=None):
+def attention(query, key, value, mask=None, dropout=None, a_type='soft'):
 	"Compute 'Scaled Dot Product Attention'"
 	#pdb.set_trace()
 	d_k = query.size(-1)
@@ -18,7 +22,13 @@ def attention(query, key, value, mask=None, dropout=None):
 			 / math.sqrt(d_k)
 	if mask is not None:
 		scores = scores + mask
-	p_attn = F.softmax(scores, dim = -1)
+	if a_type == 'soft': 
+        # soft-attention: use softmax of scores
+        p_attn = F.softmax(scores, dim = -1)
+	else: 
+        # hard-attention: use actual maximum attention values
+        # description of hardmax function in https://arxiv.org/pdf/1901.03429.pdf
+        p_attn = hardmax(scores)
 	if dropout is not None:
 		p_attn = dropout(p_attn)
 	return torch.matmul(p_attn, value), p_attn
@@ -54,7 +64,7 @@ class MultiHeadedAttention(nn.Module):
 				ln.bias.fill_(0.0)
 		ln.requires_grad_(False)
 		
-	def forward(self, query, key, value, mask=None):
+	def forward(self, query, key, value, mask=None, a_type='soft'):
 		"Implements Figure 2"
 		if mask is not None:
 			# Same mask applied to all h heads.
@@ -68,7 +78,7 @@ class MultiHeadedAttention(nn.Module):
 		
 		# 2) Apply attention on all the projected vectors in batch. 
 		x, self.attn = attention(query, key, value, mask=mask, 
-								 dropout=self.dropout)
+								 dropout=self.dropout, a_type=a_type)
 		
 		# 3) "Concat" using a view and apply a final linear. 
 		x = x.transpose(1, 2).contiguous() \
