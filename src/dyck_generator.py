@@ -29,7 +29,7 @@ class DyckGenerator ():
 
         # Grammar: S -> (_i S )_i | SS | empty
         # With probability p we open a new paranthesis
-        while current_size <= size:
+        while current_size < size:
             prob = random.random()
             if prob < self.p or len(stack) == 0:
                 chosen_pair = random.choice (self.pairs) # randomly pick one of the pairs.
