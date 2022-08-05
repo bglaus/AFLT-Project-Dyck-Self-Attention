@@ -11,7 +11,17 @@ The code is built upon/inspired by various existing implementations:
 Since Chiang et al. only applied their improvements for PARITY, we tried to adapt them for DYCK-2 in this project.
 
 ## TODO: Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The DYCK-2 and PARITY languages are defined as follows. (Visualization adapted from [Hahn](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ))
+
+![img](images/languages.JPG)
+
+
+![img](src/results/result_150_2_2_200_2.png)
+
+As we can see from letting a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (200 token) does not converge to a good accuracy or cross entropy, different 
+from recognizing shorter sequences (10 token), where fast convergence can be observed.
+
+![img](src/results/result_150_2_2_10_2.png)
 
 ## TODO: Installation
 Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
