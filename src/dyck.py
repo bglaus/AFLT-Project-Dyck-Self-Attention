@@ -1,3 +1,4 @@
+from numpy import arange
 import torch
 import math
 import encoder
@@ -45,8 +46,10 @@ class PositionEncoding(torch.nn.Module):
     ----------
     size : int
         size of the normally distributed vector
-    scales : torch.nn.Parameter
-        A torch parameter containing a tensor of random numbers drawn from a normal distribution with mean 0 and std 1
+    pow : torch.nn.Parameter
+        A torch parameter containing a tensor of powers for calculating the positional encoding after Vasawni et al.
+    cond : torch.Tensor
+        A boolean torch Tensor containing True if the index is even
 
     Methods
     -------
@@ -58,16 +61,17 @@ class PositionEncoding(torch.nn.Module):
         super().__init__()
         assert size % 2 == 0
         self.size = size
-        self.scales = torch.nn.Parameter(torch.normal(0, 1., (size,)))
+        self.pow = torch.nn.Parameter(torch.pow(10000, torch.arange(0, 2*size, 2)/size))
+        self.cond = torch.arange(size) % 2 == 0
 
     def forward(self, n):
-        # create positional encoding
 
-        p = torch.arange(0, n).to(torch.float).unsqueeze(1)
-        pe = torch.cat([
-            p / n * torch.exp(self.scales[:n//2]),
-            torch.cos(p*math.pi * torch.exp(self.scales[n//2:])),
-        ], dim=1)
+        # Create 1-dimensional vector with the positions
+        p = torch.arange(n).to(torch.float).unsqueeze(1)
+        # Divide by the power
+        pe = p / self.pow
+        # Create the positional encoding using the mask
+        pe = torch.where(self.cond, torch.sin(pe), torch.cos(pe))
         return pe
 
 class Model(torch.nn.Module):
