@@ -26,17 +26,20 @@ for filename in os.listdir(results_dir):
         ax1, ax2 = fig.subplots(2,1)
         # plot cross entropy development on the first
         epochs = [i+1 for i in range(0,len(all_train_length))]
-        ax1.plot(epochs,all_train_ce)
-        ax1.plot(epochs,all_test_ce)
-        ax1.set_title('cross entropy',  fontsize='small')
+        ax1.plot(epochs,all_train_ce, label='train')
+        ax1.plot(epochs,all_test_ce, label='test')
+        #ax1.set_title('cross entropy',  fontsize='small')
         ax1.set_xlabel('epochs')
         ax1.set_ylabel('cross entropy')
+        ax1.legend()
         # plot accuracy development on the second
-        ax2.plot(epochs,all_train_acc)
-        ax2.plot(epochs,all_test_acc)
-        ax2.set_title('accuracy',  fontsize='small')
+        ax2.plot(epochs,all_train_acc, label='train')
+        ax2.plot(epochs,all_test_acc, label='test')
+        #ax2.set_title('accuracy',  fontsize='small')
         ax2.set_xlabel('epochs')
         ax2.set_ylabel('accuracy')
+        ax2.legend()
+
         plt.tight_layout()
         plt.savefig(save_name)
         #plt.show()
