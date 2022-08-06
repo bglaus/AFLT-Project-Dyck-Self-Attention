@@ -28,8 +28,10 @@ ap.add_argument('--heads', dest='heads', type=int, default=2)
 ap.add_argument('--d_model', type=int, default=16)
 # Dimension of the Feedforward Neural Network
 ap.add_argument('--d_ffnn', type=int, default=64)
-# log-length scaled attention
-ap.add_argument('--scaled', type=bool, default=False, help='log-length scaled attention')
+# If set to true, use hard attention instead of soft attention
+ap.add_argument('--hard', type=bool, default=False, help='hard attention')
+# log-length scaled attention, only works if hard attention is not set to true
+ap.add_argument('--scaled', type=bool, default=False, help='log-length scaled attention (only works if hard attention is not set to true)')
 # Value added to denominator in layer normalization
 ap.add_argument('--eps', type=float, default=1e-5, help='Value added to denominator in layer normalization')
 args = ap.parse_args()
@@ -49,7 +51,7 @@ class PositionEncoding(torch.nn.Module):
     pow : torch.nn.Parameter
         A torch parameter containing a tensor of powers for calculating the positional encoding after Vasawni et al.
     cond : torch.Tensor
-        A boolean torch Tensor containing True if the index is even
+        A boolean torch Tensor containing True if the index is even and otherwise is set to false
 
     Methods
     -------
@@ -66,24 +68,26 @@ class PositionEncoding(torch.nn.Module):
 
     def forward(self, n):
 
-        # Create 1-dimensional vector with the positions
         p = torch.arange(n).to(torch.float).unsqueeze(1)
-        # Divide by the power
         pe = p / self.pow
-        # Create the positional encoding using the mask
         pe = torch.where(self.cond, torch.sin(pe), torch.cos(pe))
         return pe
 
 class Model(torch.nn.Module):
-    def __init__(self, alphabet_size, layers, heads, d_model, d_ffnn, scaled=False, eps=1e-5):
+    def __init__(self, alphabet_size, layers, heads, d_model, d_ffnn, hard=False, scaled=False, eps=1e-5):
         super().__init__()
 
         # The input layer has a word embedding and positional encoding
         self.word_embedding = torch.nn.Embedding(num_embeddings=alphabet_size, embedding_dim=d_model)
         self.pos_encoding = PositionEncoding(d_model)
 
+        if hard and scaled:
+            print("Setting scaled to True has no effect, since hard is also set to True")
+
         # Call the Transformer
-        if scaled:
+        if hard:
+            encoder_layer = encoder.HardTransformerEncoderLayer(d_model=d_model, nhead=heads, dim_feedforward=d_ffnn, dropout=0.)
+        elif scaled:
             encoder_layer = encoder.ScaledTransformerEncoderLayer(d_model=d_model, nhead=heads, dim_feedforward=d_ffnn, dropout=0.)
         else:
             encoder_layer = encoder.TransformerEncoderLayer(d_model=d_model, nhead=heads, dim_feedforward=d_ffnn, dropout=0.)
@@ -98,7 +102,7 @@ class Model(torch.nn.Module):
         z = self.output_layer(y[-1])
         return z
 
-model = Model(2*args.depth+1, args.layers, args.heads, args.d_model, args.d_ffnn, args.scaled, args.eps)
+model = Model(2*args.depth+1, args.layers, args.heads, args.d_model, args.d_ffnn, args.hard, args.scaled, args.eps)
 optim = torch.optim.Adam(model.parameters(), lr=0.0003)
 
 for epoch in range(args.epochs):
