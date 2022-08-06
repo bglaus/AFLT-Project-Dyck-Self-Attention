@@ -44,24 +44,18 @@ class SigmoidAttention(torch.nn.Module):
         return attn_output, attn
 
 class TransformerEncoderLayer(torch.nn.TransformerEncoderLayer):
-    def __init__(self, d_model, nhead, dim_feedforward, dropout):
-        super().__init__(d_model, nhead, dim_feedforward, dropout)
-        self.self_attn = MultiHeadedAttention(d_model, nhead, dropout=dropout)
-
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
-        src2 = self.self_attn(
-            src, 
-            src, 
-            src,
-            mask=src_mask,
-            hard_attention=False)
+        src2, self.last_weights = self.self_attn(
+            src, src, src,
+            attn_mask=src_mask,
+            key_padding_mask=src_key_padding_mask)
         src = src + self.dropout1(src2)
         src = self.norm1(src)
         src2 = self.linear2(self.dropout(self.activation(self.linear1(src))))
         src = src + self.dropout2(src2)
         src = self.norm2(src)
         return src
-    
+
 class HardTransformerEncoderLayer(torch.nn.TransformerEncoderLayer):
     def __init__(self, d_model, nhead, dim_feedforward, dropout):
         super().__init__(d_model, nhead, dim_feedforward, dropout)
@@ -82,17 +76,13 @@ class HardTransformerEncoderLayer(torch.nn.TransformerEncoderLayer):
         return src
 
 class ScaledTransformerEncoderLayer(torch.nn.TransformerEncoderLayer):
-    def __init__(self, d_model, nhead, dim_feedforward, dropout):
-        super().__init__(d_model, nhead, dim_feedforward, dropout)
-        self.self_attn = MultiHeadedAttention(d_model, nhead, dropout=dropout)
-    
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
-        src2 = self.self_attn(
+        src2, self.last_weights = self.self_attn(
             src*math.log(len(src)),
             src,
             src,
-            mask=src_mask,
-            hard_attention=False)
+            attn_mask=src_mask,
+            key_padding_mask=src_key_padding_mask)
         src = src + self.dropout1(src2)
         src = self.norm1(src)
         src2 = self.linear2(self.dropout(self.activation(self.linear1(src))))
