@@ -5,7 +5,6 @@ import encoder
 import argparse
 from dyck_generator import DyckGenerator
 
-# Copied from https://github.com/ndnlp/parity
 # All arguments have a default value, but can also be given as an argument
 ap = argparse.ArgumentParser()
 # Length of the string given for training and testing
