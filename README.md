@@ -11,23 +11,58 @@ The code is built upon/inspired by various existing implementations:
 Since Chiang et al. only applied their improvements for PARITY, we tried to adapt them for DYCK-2 in this project.
 
 ## TODO: Visuals
-The DYCK-2 and PARITY languages are defined as follows. (Visualization adapted from [Hahn](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ))
+The DYCK-2 and PARITY languages are defined as follows (Visualization adapted from [Slides](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ) provided by Hahn):
 
-![img](images/languages.JPG)
+<img src="images/languages_dyck.JPG" alt="dyck-2" width="200"/>
+<img src="images/languages_parity.JPG" alt="parity" width="200"/>
 
+As we can see a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (200 token) does not converge to a good accuracy or cross entropy. Different 
+from recognizing shorter sequences (10 token) with the same network, where fast convergence can be observed.
 
 ![img](src/results/result_150_2_2_200_2.png)
 
-As we can see from letting a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (200 token) does not converge to a good accuracy or cross entropy, different 
-from recognizing shorter sequences (10 token), where fast convergence can be observed.
-
 ![img](src/results/result_150_2_2_10_2.png)
 
-## TODO: Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## Installation
+Install the provided requirements by executing 
+```
+pip install -r requirements.txt
+```
+
 
 ## TODO: Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Base Line Experiments
+Reproduce the base line experiments by executing
+```
+python src/base_experiments.py
+```
+
+### Recognize DYCK Language
+Generate Dyck examples and train a model by executing
+```
+python src/dyck.py
+```
+| argument       | type  | default | explanation                                                                                        |
+|----------------|-------|---------|----------------------------------------------------------------------------------------------------|
+| --train_length | int   | 100     | Length of the string given for training                                                            |
+| --test_length  | int   | 100     | Length of the string given for testing                                                             |
+| -p_val         | float | 0.5     | Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck |
+| -q_val         | float | 0.5     | Probability for not changing one character in the Dyck-word when generating it                     |
+| --depth        | int   | 1       | Depth of the Dyck-Language (possible from 1 to 4)                                                  |
+| --epochs       | int   | 100     | Number of epochs                                                                                   |
+| --steps        | int   | 100     | Number of different steps for training and testing                                                 |
+
+Model Parameters
+
+| argument  | type  | default | explanation                                                                   |
+|-----------|-------|---------|-------------------------------------------------------------------------------|
+| --layers  | int   | 2       | Number of layers in the Transformer                                           |
+| --heads   | int   | 2       | Number of heads in the Transformer                                            |
+| --d_model | int   | 16      | Dimension of the model                                                        |
+| --d_ffnn  | int   | 64      | Dimension of the Feedforward Neural Network                                   |
+| --hard    | bool  | False   | If set to true, use hard attention instead of soft attention                  |
+| --scaled  | bool  | False   | Log-length scaled attention (only works if hard attention is not set to true) |
+| --eps     | float | 1e-5    | Value added to denominator in layer normalization                             |
 
 ## TODO: Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
