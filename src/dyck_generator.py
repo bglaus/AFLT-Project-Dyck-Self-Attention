@@ -15,7 +15,7 @@ class DyckGenerator ():
         self.p = p
         self.q = q
     
-    def generate (self, size):
+    def generate (self, size, depth=-1):
         inp = []
         label = True
         stack = []
@@ -25,7 +25,7 @@ class DyckGenerator ():
         # With probability p we open a new paranthesis
         while current_size < size:
             prob = random.random()
-            if prob < self.p or len(stack) == 0:
+            if (prob < self.p or len(stack) == 0) and len(stack) != depth:
                 chosen_pair = random.choice (self.pairs) # randomly pick one of the pairs.
                 # Add the opening paranthesis to the inp sequence
                 inp.append(chosen_pair[0])
@@ -40,8 +40,8 @@ class DyckGenerator ():
         while len(stack) != 0:
             inp.append(stack.pop())
 
-        # Generate the output and
-        # with a probability of 1 - q produce a word that is not in Dyck anymore (from the Dyck word already produced)
+        # Generate the output and with a probability of 1 - q produce a word that is not in Dyck anymore 
+        # (from the Dyck word already produced)
         prob = random.random()
         if prob > self.q:
             # Change the label to False
