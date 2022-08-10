@@ -31,6 +31,8 @@ for filename in os.listdir(results_dir):
         #ax1.set_title('cross entropy',  fontsize='small')
         ax1.set_xlabel('epochs')
         ax1.set_ylabel('cross entropy')
+        ax1.set_xlim([0, int(num_epochs)])
+        ax1.set_ylim([0, 1.05])
         ax1.legend()
         # plot accuracy development on the second
         ax2.plot(epochs,all_train_acc, label='train')
@@ -38,6 +40,8 @@ for filename in os.listdir(results_dir):
         #ax2.set_title('accuracy',  fontsize='small')
         ax2.set_xlabel('epochs')
         ax2.set_ylabel('accuracy')
+        ax2.set_ylim([0, 1.05])
+        ax2.set_xlim([0, int(num_epochs)])
         ax2.legend()
 
         plt.tight_layout()

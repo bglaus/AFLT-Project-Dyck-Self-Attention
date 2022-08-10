@@ -34,14 +34,16 @@ pip install -r requirements.txt
 ### Base Line Experiments
 Reproduce the base line experiments by executing
 ```
-python src/base_experiments.py
+cd src
+python base_experiments.py
 ```
 You can change the output folder name in `base_experiments.py` to clearly separate your results.
 
 ### Recognize DYCK Language
 Generate Dyck examples and train a model by executing
 ```
-python src/dyck.py
+cd src
+python dyck.py
 ```
 | argument       | type  | default | explanation                                                                                        |
 |----------------|-------|---------|----------------------------------------------------------------------------------------------------|
@@ -68,7 +70,8 @@ Model Parameters
 ### Create Plots From Results
 You can create plots of train and test metrics for different word lengths by executing the corresponding script:
 ```
-python src/plot_results.py
+cd src
+python plot_results.py
 ```
 When your results are not stored under `results/`, change the folder name in the file `plot_results.py`.
 
