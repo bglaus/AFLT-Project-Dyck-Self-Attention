@@ -13,8 +13,8 @@ ap.add_argument('--test_length', dest='test_length', type=int, default=100)
 # Probabilites for the creation of the Dyck words
 ap.add_argument('-p_val', dest='p_val', type=float, default=0.5, help='Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck')
 ap.add_argument('-q_val', dest='q_val', type=float, default=0.5, help='Probability for not changing one character in the Dyck-word when generating it')
-# Depth of the Dyck-Language (possible from 1 to 4)
-ap.add_argument('--depth', dest='depth', type=int, default=1)
+# Number of different bracket types of the Dyck-Language (possible from 1 to 4)
+ap.add_argument('-num_par', dest='num_par', type=int, default=1, help='the n of Dyck-n')
 # number of epochs
 ap.add_argument('--epochs', dest='epochs', type=int, default=100)
 # number of different steps for training and testing
@@ -101,7 +101,7 @@ class Model(torch.nn.Module):
         z = self.output_layer(y[-1])
         return z
 
-model = Model(2*args.depth+1, args.layers, args.heads, args.d_model, args.d_ffnn, args.hard, args.scaled, args.eps)
+model = Model(2*args.num_par+1, args.layers, args.heads, args.d_model, args.d_ffnn, args.hard, args.scaled, args.eps)
 optim = torch.optim.Adam(model.parameters(), lr=0.0003)
 
 for epoch in range(args.epochs):
@@ -111,9 +111,9 @@ for epoch in range(args.epochs):
     
     for step in range(args.steps):
         n = args.train_length
-        gen = DyckGenerator(args.depth, args.p_val, args.q_val)
+        gen = DyckGenerator(args.num_par, args.p_val, args.q_val)
         inp, label = gen.generate(n)
-        w = torch.tensor(inp + [2*args.depth])
+        w = torch.tensor(inp + [2*args.num_par])
         output = model(w)
         if not label: output = -output
         if output > 0: train_correct += 1
@@ -129,9 +129,9 @@ for epoch in range(args.epochs):
     test_correct = 0
     for step in range(args.steps):
         n = args.test_length
-        gen = DyckGenerator(args.depth, args.p_val, args.q_val)
+        gen = DyckGenerator(args.num_par, args.p_val, args.q_val)
         inp, label = gen.generate(n)
-        w = torch.tensor(inp + [2*args.depth])
+        w = torch.tensor(inp + [2*args.num_par])
         output = model(w)
         if not label: output = -output
         if output > 0: test_correct += 1
