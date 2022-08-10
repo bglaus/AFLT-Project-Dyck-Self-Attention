@@ -13,8 +13,8 @@ Since Chiang et al. only applied their improvements for PARITY, we tried to adap
 ## TODO: Visuals
 The DYCK-2 and PARITY languages are defined as follows (Visualization adapted from [Slides](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ) provided by Hahn):
 
-<img src="images/languages_dyck.JPG" alt="dyck-2" width="200"/>
-<img src="images/languages_parity.JPG" alt="parity" width="200"/>
+<img src="images/languages_dyck.JPG" alt="dyck-2" width="350"/>
+<img src="images/languages_parity.JPG" alt="parity" width="350"/>
 
 As we can see a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (200 token) does not converge to a good accuracy or cross entropy. Different 
 from recognizing shorter sequences (10 token) with the same network, where fast convergence can be observed.
