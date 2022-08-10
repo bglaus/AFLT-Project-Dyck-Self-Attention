@@ -36,6 +36,7 @@ Reproduce the base line experiments by executing
 ```
 python src/base_experiments.py
 ```
+You can change the output folder name in `base_experiments.py` to clearly separate your results.
 
 ### Recognize DYCK Language
 Generate Dyck examples and train a model by executing
@@ -63,6 +64,13 @@ Model Parameters
 | --hard    | bool  | False   | If set to true, use hard attention instead of soft attention                  |
 | --scaled  | bool  | False   | Log-length scaled attention (only works if hard attention is not set to true) |
 | --eps     | float | 1e-5    | Value added to denominator in layer normalization                             |
+
+### Create Plots From Results
+You can create plots of train and test metrics for different word lengths by executing the corresponding script:
+```
+python src/plot_results.py
+```
+When your results are not stored under `results/`, change the folder name in the file `plot_results.py`.
 
 ## TODO: Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
