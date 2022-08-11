@@ -91,7 +91,6 @@ class DyckGenerator ():
         while len(pool) != 0:
             inp.append(pool.pop(random.randrange(len(pool))))
 
-        print(inp)
         # Generate the output and with a probability of 1 - q produce a word that is not in Dyck anymore 
         # (from the Dyck word already produced)
         prob = random.random()

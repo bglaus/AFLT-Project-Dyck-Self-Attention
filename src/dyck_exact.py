@@ -16,6 +16,8 @@ ap.add_argument('-q_val', dest='q_val', type=float, default=0.5, help='Probabili
 ap.add_argument('-num_par', dest='num_par', type=int, default=1, help='the number of pairs N of N-Dyck')
 # Depth for when the language Dyck-(N, D) is created
 ap.add_argument('-depth', dest='depth', type=int, default=-1, help='the depth D of Dyck-(N, D). Default: -1 (N-Dyck is used)')
+# If num_par bigger than 1, do we want basic N-Dyck or shuffle Dyck
+ap.add_argument('-shuffle', dest='shuffle', type=bool, default=False, help='If True, than Shuffle-Dyck is produced')
 # number of epochs
 ap.add_argument('--epochs', dest='epochs', type=int, default=100)
 # number of different steps for training and testing
@@ -194,7 +196,10 @@ for epoch in range(args.epochs):
             n = args.num_par
             d = args.depth
             gen = DyckGenerator(n, args.p_val, args.q_val)
-            inp, label = gen.generate_dyck(size, d)
+            if args.shuffle:
+                inp, label = gen.generate_shuffle_dyck(size)
+            else:
+                inp, label = gen.generate_dyck(size, d)
             w = torch.tensor(inp + [2*n])
             output = model(w)
             if not label: output = -output
@@ -215,7 +220,10 @@ for epoch in range(args.epochs):
             n = args.num_par
             d = args.depth
             gen = DyckGenerator(n, args.p_val, args.q_val)
-            inp, label = gen.generate_dyck(size, d)
+            if args.shuffle:
+                inp, label = gen.generate_shuffle_dyck(size)
+            else:
+                inp, label = gen.generate_dyck(size, d)
             w = torch.tensor(inp + [2*n])
             output = model(w)
             if not label: output = -output
