@@ -6,7 +6,7 @@ for filename in os.listdir(results_dir):
     if filename.lower().endswith('.txt'):
         filename = os.path.join(results_dir, filename)
         params = filename.split('.')[0].split('_')
-        [ _, num_epochs, num_layers, num_heads, length, depth] = params
+        [ _, num_epochs, num_layers, num_heads, length, depth, num_par, shuffle] = params
         file = open(filename, 'r')
         lines = file.read()
         out = lines.split('stdout=')[1].split('\\n')[0:-1]
@@ -18,11 +18,20 @@ for filename in os.listdir(results_dir):
         all_train_acc = [float(x.split(' ')[2].split('=')[1]) for x in out]
         all_test_ce = [float(x.split(' ')[3].split('=')[1]) for x in out]
         all_test_acc = [float(x.split(' ')[4].split('=')[1]) for x in out]
+        
+        prep = ''
+        if (int(depth) == -1):
+            prep = f'{num_par}'
+        else:
+            prep = f'({num_par}, {depth})'
+        if shuffle == 'True':
+            prep = 'shuffle-' + prep
+        dyck_name = f'{prep}-DYCK'
 
         save_name = filename.split('.')[0] + '.png'
         # create 2 subplots 
         fig = plt.figure(figsize=(8, 5))
-        fig.suptitle(f"train vs. test metrics, word length = {length}", y= 0.95) 
+        fig.suptitle(f"train vs. test metrics on {dyck_name}, word length = {length}", y= 0.95) 
         ax1, ax2 = fig.subplots(2,1)
         # plot cross entropy development on the first
         epochs = [i+1 for i in range(0,len(all_train_length))]

@@ -17,11 +17,11 @@ The DYCK-2 and PARITY languages are defined as follows (Visualization adapted fr
 <img src="images/languages_parity.JPG" alt="parity" width="350"/>
 
 As we can see a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (200 token) does not converge to a good accuracy or cross entropy. Different 
-from recognizing shorter sequences (10 token) with the same network, where fast convergence can be observed.
+from recognizing shorter sequences (5 token) with the same network, where fast convergence can be observed.
 
-![img](src/results/result_150_2_2_200_2.png)
+![img](src/results/result_150_2_2_200_-1_2_False.png)
 
-![img](src/results/result_150_2_2_10_2.png)
+![img](src/results/result_150_2_2_5_-1_2_False.png)
 
 ## Installation
 Install the provided requirements by executing 
@@ -43,15 +43,17 @@ You can change the output folder name in `base_experiments.py` to clearly separa
 Generate Dyck examples and train a model by executing
 ```
 cd src
-python dyck.py
+python dyck_reproduce.py
 ```
 | argument       | type  | default | explanation                                                                                        |
 |----------------|-------|---------|----------------------------------------------------------------------------------------------------|
 | --train_length | int   | 100     | Length of the string given for training                                                            |
 | --test_length  | int   | 100     | Length of the string given for testing                                                             |
-| -p_val         | float | 0.5     | Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck |
-| -q_val         | float | 0.5     | Probability for not changing one character in the Dyck-word when generating it                     |
-| --depth        | int   | 1       | Depth of the Dyck-Language (possible from 1 to 4)                                                  |
+| --p_val         | float | 0.5     | Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck |
+| --q_val         | float | 0.5     | Probability for not changing one character in the Dyck-word when generating it                     |
+| --num_par        | int   | 1       | the number of pairs N of N-Dyck  |
+| --depth        | int   | -1       | the depth D of Dyck-(N, D). (Default -1 means N-Dyck is used) |
+| --shuffle        | bool   | False       | If True, then Shuffle-Dyck is produced                                                  |
 | --epochs       | int   | 100     | Number of epochs                                                                                   |
 | --steps        | int   | 100     | Number of different steps for training and testing                                                 |
 
