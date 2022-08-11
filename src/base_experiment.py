@@ -12,10 +12,10 @@ depth = -1
 shuffle = False
 
 for length in train_lengths:
-    command = ['python', 'dyck_reproduce.py', '--epochs', f'{num_epochs}', '--layers', f'{num_layers}', '--heads', f'{num_heads}', '--train_length', f'{length}', '--test_length', f'{length}', '--num_par', f'{num_par}',  '--depth', f'{depth}', '--shuffle' f'{shuffle}']
+    command = ['python', 'dyck_reproduce.py', '--epochs', f'{num_epochs}', '--layers', f'{num_layers}', '--heads', f'{num_heads}', '--train_length', f'{length}', '--test_length', f'{length}', '--num_par', f'{num_par}',  '--depth', f'{depth}', '--shuffle', f'{shuffle}']
     foldername = 'results'
     Path(foldername).mkdir(parents=True, exist_ok=True)
-    filename = f'{foldername}/result_{num_epochs}_{num_layers}_{num_heads}_{length}_{depth}.txt'
+    filename = f'{foldername}/result_{num_epochs}_{num_layers}_{num_heads}_{length}_{depth}_{num_par}_{shuffle}.txt'
     sys.stdout = open(filename, 'w')
     # run bash command
     completed = subprocess.run(command, capture_output=True, text=True)

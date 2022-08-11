@@ -10,14 +10,14 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--train_length', dest='train_length', type=int, default=100)
 ap.add_argument('--test_length', dest='test_length', type=int, default=100)
 # Probabilites for the creation of the Dyck words
-ap.add_argument('-p_val', dest='p_val', type=float, default=0.5, help='Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck')
-ap.add_argument('-q_val', dest='q_val', type=float, default=0.5, help='Probability for not changing one character in the Dyck-word when generating it')
+ap.add_argument('--p_val', dest='p_val', type=float, default=0.5, help='Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck')
+ap.add_argument('--q_val', dest='q_val', type=float, default=0.5, help='Probability for not changing one character in the Dyck-word when generating it')
 # Number of different bracket types of the Dyck-Language (possible from 1 to 4)
-ap.add_argument('-num_par', dest='num_par', type=int, default=1, help='the number of pairs N of N-Dyck')
+ap.add_argument('--num_par', dest='num_par', type=int, default=1, help='the number of pairs N of N-Dyck')
 # Depth for when the language Dyck-(N, D) is created
-ap.add_argument('-depth', dest='depth', type=int, default=-1, help='the depth D of Dyck-(N, D). Default: -1 (N-Dyck is used)')
+ap.add_argument('--depth', dest='depth', type=int, default=-1, help='the depth D of Dyck-(N, D). Default: -1 (N-Dyck is used)')
 # If num_par bigger than 1, do we want basic N-Dyck or shuffle Dyck
-ap.add_argument('-shuffle', dest='shuffle', type=bool, default=False, help='If True, than Shuffle-Dyck is produced')
+ap.add_argument('--shuffle', dest='shuffle', type=bool, default=False, help='If True, than Shuffle-Dyck is produced')
 # number of epochs
 ap.add_argument('--epochs', dest='epochs', type=int, default=100)
 # number of different steps for training and testing
