@@ -190,12 +190,12 @@ for epoch in range(args.epochs):
         train_steps = 0
         train_correct = 0
         for step in range(args.steps):
-            n = args.train_length
-            N = args.num_par
+            size = args.train_length
+            n = args.num_par
             d = args.depth
-            gen = DyckGenerator(N, args.p_val, args.q_val)
-            inp, label = gen.generate(n, d)
-            w = torch.tensor(inp + [2*N])
+            gen = DyckGenerator(n, args.p_val, args.q_val)
+            inp, label = gen.generate_dyck(size, d)
+            w = torch.tensor(inp + [2*n])
             output = model(w)
             if not label: output = -output
             if output > 0: train_correct += 1
@@ -211,12 +211,12 @@ for epoch in range(args.epochs):
         test_steps = 0
         test_correct = 0
         for step in range(args.steps):
-            n = args.test_length
-            N = args.num_par
+            size = args.test_length
+            n = args.num_par
             d = args.depth
-            gen = DyckGenerator(N, args.p_val, args.q_val)
-            inp, label = gen.generate(n, d)
-            w = torch.tensor(inp + [2*N])
+            gen = DyckGenerator(n, args.p_val, args.q_val)
+            inp, label = gen.generate_dyck(size, d)
+            w = torch.tensor(inp + [2*n])
             output = model(w)
             if not label: output = -output
             if output > 0: test_correct += 1
