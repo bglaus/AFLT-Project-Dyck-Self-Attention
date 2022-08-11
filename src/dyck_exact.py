@@ -33,22 +33,30 @@ args = ap.parse_args()
 
 log_sigmoid = torch.nn.LogSigmoid()
 
+def _generate_mask(s):
+    mask = (torch.triu(torch.ones(s, s)) == 1).transpose(0, 1)
+    mask = mask.float()
+    mask = mask.masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
+    return mask
+
+
 class PositionEncoding(torch.nn.Module):
     def __init__(self):
         super().__init__()
 
     def forward(self, n):
         zero = torch.zeros(n)
-        pos = torch.arange(0, n).to(torch.float)
+        pos = torch.zeros(n)
+        pos[n-1] = 1.
         pe = torch.stack([zero]*3 +
-                         [pos / n,
-                          torch.cos(pos*math.pi)] +
-                         [zero]*5,
+                         [pos] +
+                         [zero]*6,
                          dim=1)
         return pe
 
 class FirstLayer(torch.nn.TransformerEncoderLayer):
     def __init__(self):
+        self.src_mask = None
         super().__init__(10, 2, 3, dropout=0.)
         self.self_attn.in_proj_weight = torch.nn.Parameter(torch.tensor(
             # First head attends to all symbols,
@@ -58,7 +66,7 @@ class FirstLayer(torch.nn.TransformerEncoderLayer):
             # W^K
             [[0]*10]*10 +
             # W^V
-            [[0,1,0,0,0,0,0,0,0,0],   # count 1s  (k)
+            [[-1,1,0,0,0,0,0,0,0,0],   # count 1s - 0s  (k)
              [0,0,1,0,0,0,0,0,0,0]]+   # count CLS (1)
             [[0]*10]*8,
             dtype=torch.float))
@@ -67,29 +75,31 @@ class FirstLayer(torch.nn.TransformerEncoderLayer):
 
         self.self_attn.out_proj.weight = torch.nn.Parameter(torch.tensor(
             # W^O
-            [[0]*10]*5 +
+            [[0]*10]*4 +
             [[1,0,0,0,0,0,0,0,0,0],   # put new values into dims 5-6
              [0,1,0,0,0,0,0,0,0,0]] +
-            [[0]*10]*3,
+            [[0]*10]*4,
             dtype=torch.float))
         self.self_attn.out_proj.bias = torch.nn.Parameter(torch.zeros(10))
 
         self.linear1.weight = torch.nn.Parameter(torch.tensor([
-            [0,0,0,-1,0,1,-1,0,0,0],  # k-i-1
-            [0,0,0,-1,0,1, 0,0,0,0],  # k-i
-            [0,0,0,-1,0,1, 1,0,0,0],  # k-i+1
+            [0,0,0,0,1, 1,0,0,0,0],  # k-i-1
+            [0,0,0,0,1, 0,0,0,0,0],  # k-i
+            [0,0,0,0,1,-1,0,0,0,0],  # k-i+1
         ], dtype=torch.float))
         self.linear1.bias = torch.nn.Parameter(torch.zeros(3))
         self.linear2.weight = torch.nn.Parameter(torch.tensor(
-            [[0, 0, 0]]*7 +
-            [[1,-2, 1],  # put I[i=c1] in dim 7
+            [[0, 0, 0]]*6 +
+            [[0, 1,-1],  
+             [1,-2, 1],
              [0, 0, 0],
              [0, 0, 0]], 
             dtype=torch.float))
         self.linear2.bias = torch.nn.Parameter(torch.zeros(10))
         
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
-        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
+        self.src_mask = _generate_mask(src.shape[0])
+        src2 = self.self_attn(src, src, src, attn_mask=self.src_mask,
                               key_padding_mask=src_key_padding_mask)[0]
         src = src + self.dropout1(src2)
         src2 = self.linear2(self.dropout(self.activation(self.linear1(src))))
@@ -98,47 +108,38 @@ class FirstLayer(torch.nn.TransformerEncoderLayer):
 
 class SecondLayer(torch.nn.TransformerEncoderLayer):
     def __init__(self):
+        self.src_mask = None
         super().__init__(10, 2, 3, dropout=0.)
         self.self_attn.in_proj_weight = torch.nn.Parameter(torch.tensor(
             # W^Q
-            # Heads 1 and 2 attend from CLS
-            [[0,0,args.big,0,0,0,0,0,0,0]] +
-            [[0]*10]*4 +
-            [[0,0,args.big,0,0,0,0,0,0,0]] +
-            [[0]*10]*4 +
+            [[0]*10]*10 +
             # W^K
-            # Head 1 attends to odd positions
-            [[0,0,0,0, 1,0,0,0,0,0]] +
-            [[0]*10]*4 +
-            # Head 2 attends to even positions
-            [[0,0,0,0,-1,0,0,0,0,0]] +
-            [[0]*10]*4 +
+            [[0]*10]*10 +
             # W^V
-            # Heads 1 and 2 average dim 7
-            [[0,0,0,0,0,0,0,1,0,0]] +
-            [[0]*10]*4 +
-            [[0,0,0,0,0,0,0,1,0,0]] +
-            [[0]*10]*4,
+            [[0]*10]*10,
             dtype=torch.float))
 
         self.self_attn.in_proj_bias = torch.nn.Parameter(torch.zeros(30))
 
         self.self_attn.out_proj.weight = torch.nn.Parameter(torch.tensor(
             # W^O
-            # Even positions minus odd positions
-            # Place in dim 8
-            [[0]*10]*8 +
-            [[-1,0,0,0,0,1,0,0,0,0],
-             [0,0,0,0,0,0,0,0,0,0]],
+            [[0]*10]*10,
             dtype=torch.float))
         self.self_attn.out_proj.bias = torch.nn.Parameter(torch.zeros(10))
 
-        self.linear1.weight = torch.nn.Parameter(torch.zeros(3,10))
-        self.linear1.bias = torch.nn.Parameter(torch.zeros(3))
-        self.linear2.weight = torch.nn.Parameter(torch.zeros(10,3))
+        self.linear1.weight = torch.nn.Parameter(torch.tensor([
+            [-1,-1,-1,1,0,0,0,1,0,0]
+        ], dtype=torch.float))
+        self.linear1.bias = torch.nn.Parameter(torch.zeros(1))
+        self.linear2.weight = torch.nn.Parameter(torch.tensor(
+            [[0]]*8 +
+            [[1]] + 
+            [[0]], 
+            dtype=torch.float))
         self.linear2.bias = torch.nn.Parameter(torch.zeros(10))
 
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
+        self.src_mask = _generate_mask(src.shape[0])
         q = src
         v = src
         src2 = self.self_attn(q, src, v, attn_mask=src_mask,
@@ -167,14 +168,14 @@ class Model(torch.nn.Module):
         self.encoder = MyTransformerEncoder()
         self.output_layer = torch.nn.Linear(10, 1)
         self.output_layer.weight = torch.nn.Parameter(torch.tensor(
-            [[0,0,0,0,0,0,0,0,1,0]], dtype=torch.float))
+            [[0,0,0,0,0,0,-2,0,1,0]], dtype=torch.float))
         self.output_layer.bias = torch.nn.Parameter(torch.tensor([0.]))
 
     def forward(self, w):
         x = self.word_embedding[w] + self.pos_encoding(len(w))
         y = self.encoder(x.unsqueeze(1)).squeeze(1)
-        z = self.output_layer(y[-1])
-        return -z
+        z = sum(self.output_layer(y))
+        return z
 
 model = Model()
 optim = torch.optim.Adam(model.parameters(), lr=3e-4)
@@ -200,10 +201,10 @@ for epoch in range(args.epochs):
                 inp, label = gen.generate_shuffle_dyck(size)
             else:
                 inp, label = gen.generate_dyck(size, d)
-            w = torch.tensor(inp + [2*n])
+            w = torch.tensor([2*n] + inp) 
             output = model(w)
             if not label: output = -output
-            if output > 0: train_correct += 1
+            if output >= 0: train_correct += 1
             loss = -log_sigmoid(output)
             train_loss += loss.item()
             train_steps += 1
@@ -224,10 +225,11 @@ for epoch in range(args.epochs):
                 inp, label = gen.generate_shuffle_dyck(size)
             else:
                 inp, label = gen.generate_dyck(size, d)
-            w = torch.tensor(inp + [2*n])
+            w = torch.tensor([2*n] + inp)
             output = model(w)
+            #print(inp, label, output)
             if not label: output = -output
-            if output > 0: test_correct += 1
+            if output >= 0: test_correct += 1
             loss = -log_sigmoid(output)
             test_loss += loss.item()
             test_steps += 1
