@@ -37,7 +37,7 @@ Reproduce the base line experiments by executing
 cd src
 python base_experiment.py
 ```
-You can change the output folder name in `base_experiments.py` to clearly separate your results.
+You can change the output folder name in `base_experiment.py` to clearly separate your results.
 
 ### Recognize DYCK Language
 Generate Dyck examples and train a model by executing
