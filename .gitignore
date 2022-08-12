@@ -1,3 +1,4 @@
 aflt_venv/
+aflt_env/
 .DS_Store
 */__pycache__

@@ -35,7 +35,7 @@ pip install -r requirements.txt
 Reproduce the base line experiments by executing
 ```
 cd src
-python base_experiments.py
+python base_experiment.py
 ```
 You can change the output folder name in `base_experiments.py` to clearly separate your results.
 
