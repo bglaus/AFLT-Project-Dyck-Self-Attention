@@ -224,7 +224,7 @@ for epoch in range(args.epochs):
             if args.shuffle:
                 inp, label = gen.generate_shuffle_dyck(size)
             else:
-                inp, label = gen.generate_dyck(size, d)
+                inp, label = gen.generate_dyck(size, d, change_only_one_char=args.train)
             w = torch.tensor([2*n] + inp)
             output = model(w)
             #print(inp, label, output)
