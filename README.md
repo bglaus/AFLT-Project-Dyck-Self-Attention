@@ -16,12 +16,12 @@ The DYCK-2 and PARITY languages are defined as follows (Visualization adapted fr
 <img src="images/languages_dyck.JPG" alt="dyck-2" width="350"/>
 <img src="images/languages_parity.JPG" alt="parity" width="350"/>
 
-As we can see a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (200 token) does not converge to a good accuracy or cross entropy. Different 
-from recognizing shorter sequences (5 token) with the same network, where fast convergence can be observed.
+As we can see a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (100 token) does not converge to a good accuracy or cross entropy. Different 
+from recognizing shorter sequences (10 token) with the same network, where fast convergence can be observed.
 
-![img](src/results/result_150_2_2_200_-1_2_False.png)
+![img](src/results/result_150_2_2_100_-1_2_False.png)
 
-![img](src/results/result_150_2_2_5_-1_2_False.png)
+![img](src/results/result_150_2_2_10_-1_2_False.png)
 
 ## Installation
 Install the provided requirements by executing 
