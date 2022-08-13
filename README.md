@@ -32,12 +32,14 @@ pip install -r requirements.txt
 
 ## TODO: Usage
 ### Base Line Experiments
-Reproduce the base line experiments by executing
+Reproduce the base line experiment on 2-Dyck by executing
 ```
 cd src
 python base_experiment.py
 ```
-You can change the output folder name in `base_experiment.py` to clearly separate your results.
+There are different versions of this file for running experiments with 2-Dyck hard attention (`base_hard.py`), 1-Dyck soft attention (`base_1dyck.py`) and (1,2)-Dyck with soft attention (`base_1Ddyck.py`).
+
+Precomputed results for these experiments can be found in the folders `results/` (2-Dyck soft attention), `resultsHard/`(2-Dyck hard attention), `results1dyck/` (1-Dyck soft attention), and `results1DDyck/` ((1,2)-Dyck soft attention).
 
 ### Recognize DYCK Language
 Generate Dyck examples and train a model by executing
@@ -69,8 +71,75 @@ Model Parameters
 | --scaled  | bool  | False   | Log-length scaled attention (only works if hard attention is not set to true) |
 | --eps     | float | 1e-5    | Value added to denominator in layer normalization                             |
 
+### Improved N-Dyck recognition
+Generate Dyck examples and train the improved model on N-dyck by executing
+```
+cd src
+python dyck_exact.py
+```
+
+| argument       | type  | default | explanation                                                                                        |
+|----------------|-------|---------|----------------------------------------------------------------------------------------------------|
+| --train_length | int   | 100     | Length of the string given for training                                                            |
+| --test_length  | int   | 100     | Length of the string given for testing                                                             |
+| --p_val        | float | 0.5     | Probability for a new opening bracket instead of closing the upcoming bracket when generating Dyck |
+| --q_val        | float | 0.5     | Probability for not changing one character in the Dyck-word when generating it                     |
+| --num_par      | int   | 1       | the number of pairs N of N-Dyck                                                                    |
+| --depth        | int   | -1      | the depth D of Dyck-(N, D). (Default -1 means N-Dyck is used)                                      |
+| --shuffle      | bool  | False   | If True, then Shuffle-Dyck is produced                                                             |
+| --epochs       | int   | 100     | Number of epochs                                                                                   |
+| --steps        | int   | 100     | Number of different steps for training and testing                                                 |
+| --big          | float | 1.      | ??                                                                                                 |
+| --perturb      | float | 0       | randomly perturb parameters                                                                        |
+| --train        | -     | False   | If given, model is trained before evaluation                                                       |
+| --hard         | bool  | False   | If set to true, use hard attention instead of soft attention                                       |
+
+Similarly, you can run the improved model with layer normalization using
+```
+cd src
+python dyck_exact_layernorm.py
+```
+
+which has the same arguments as without layer normalization, and one addtional argument
+
+| argument | type  | default | explanation                                       |
+|----------|-------|---------|---------------------------------------------------|
+| --eps    | float | 1e-5    | Value added to denominator in layer normalization |
+
+### Reproducting base experiments
+To run the base experiments on the improved version of the transformer, run 
+```
+cd src
+python improved_1dyck.py
+```
+This runs the same experiment as in `base_1dyck.py` but with the improved transformer and <mark>without training</mark>.
+Similarly, you can run the base experiments for 1-Dyck with layer normalization (`improved_1dyck_ln.py`) and for (1,2)-Dyck without (`improved_1Ddyck.py`) and with layer normalization (`improved_1Ddyck_ln.py`).
+
+Precomputed results can be found in the corresponding results folders (`resultsImpr1Dyck/`, `resultsImpr1DyckLN/`, `resultsImpr13Dyck/`, `resultsImpr13DyckLN/`).
+
+To run the improved experiment with (1,3)-Dyck <mark>with training</mark>, run 
+```
+cd src
+python improved_1Ddyck_train.py
+```
+These results can be plotted with `plot_improved.py`
+
+### Improved (1,D)-Dyck recognition
+Generate Dyck examples and train the improved model on (1,D)-dyck by executing
+```
+cd src
+python dyck1d_exact.py
+```
+and with layer normalization 
+```
+cd src
+python dyck1d_exact_layernorm.py
+```
+
+The arguments are the same as in the `dyck_exact` versions.
+
 ### Create Plots From Results
-You can create plots of train and test metrics for different word lengths by executing the corresponding script:
+You can create plots of train and test metrics for different word lengths by executing the corresponding script for the base experiments:
 ```
 cd src
 python plot_results.py
