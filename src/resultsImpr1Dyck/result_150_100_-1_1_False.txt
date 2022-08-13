@@ -1,0 +1,1 @@
+completed experiment CompletedProcess(args=['python', 'dyck_exact.py', '--epochs', '150', '--train_length', '100', '--test_length', '100', '--num_par', '1', '--depth', '-1', '--shuffle', 'False'], returncode=0, stdout='test_length=100 test_ce=0.941111419450036 test_acc=1.0\n', stderr='')
