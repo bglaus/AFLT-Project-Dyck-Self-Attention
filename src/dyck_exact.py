@@ -24,7 +24,6 @@ ap.add_argument('--epochs', dest='epochs', type=int, default=100)
 ap.add_argument('--steps', dest='steps', type=int, default=100)
 ############ Parameters for the model ############
 
-ap.add_argument('--big', dest='big', type=float, default=1.)
 ap.add_argument('--perturb', dest='perturb', type=float, default=0, help='randomly perturb parameters')
 ap.add_argument('--train', dest='train', action='store_true', default=False)
 # If set to true, use hard attention instead of soft attention

@@ -89,7 +89,6 @@ python dyck_exact.py
 | --shuffle      | bool  | False   | If True, then Shuffle-Dyck is produced                                                             |
 | --epochs       | int   | 100     | Number of epochs                                                                                   |
 | --steps        | int   | 100     | Number of different steps for training and testing                                                 |
-| --big          | float | 1.      | ??                                                                                                 |
 | --perturb      | float | 0       | randomly perturb parameters                                                                        |
 | --train        | -     | False   | If given, model is trained before evaluation                                                       |
 | --hard         | bool  | False   | If set to true, use hard attention instead of soft attention                                       |
