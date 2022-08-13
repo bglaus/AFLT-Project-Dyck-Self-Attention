@@ -1,0 +1,1 @@
+completed experiment CompletedProcess(args=['python', 'dyck_exact_layernorm.py', '--epochs', '150', '--train_length', '150', '--test_length', '150', '--num_par', '1', '--depth', '-1', '--shuffle', 'False'], returncode=0, stdout='test_length=150 test_ce=0.928258987004976 test_acc=1.0\n', stderr='')
