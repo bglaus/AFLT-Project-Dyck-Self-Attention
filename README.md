@@ -10,7 +10,7 @@ The code is built upon/inspired by various existing implementations:
 
 Since Chiang et al. only applied their improvements for PARITY, we tried to adapt them for DYCK-2 in this project.
 
-## TODO: Visuals
+## Visuals
 The DYCK-2 and PARITY languages are defined as follows (Visualization adapted from [Slides](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ) provided by Hahn):
 
 <img src="images/languages_dyck.JPG" alt="dyck-2" width="350"/>
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 ```
 
 
-## TODO: Usage
+## Usage
 ### Base Line Experiments
 Reproduce the base line experiment on 2-Dyck by executing
 ```
