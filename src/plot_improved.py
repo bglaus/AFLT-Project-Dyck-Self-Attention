@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 
-results_dir = 'resultsImpr13DyckTrain/'
+results_dir = 'resultsImpr1DyckLNTrain/'
 for filename in os.listdir(results_dir):
     if filename.lower().endswith('.txt'):
         filename = os.path.join(results_dir, filename)
@@ -16,8 +16,8 @@ for filename in os.listdir(results_dir):
         all_train_length = [float(x.split(' ')[0].split('=')[1]) for x in out]
         all_train_ce = [float(x.split(' ')[1].split('=')[1]) for x in out]
         all_train_acc = [float(x.split(' ')[2].split('=')[1]) for x in out]
-        all_test_ce = [float(x.split(' ')[3].split('=')[1]) for x in out]
-        all_test_acc = [float(x.split(' ')[4].split('=')[1]) for x in out]
+        all_test_ce = [float(x.split(' ')[4].split('=')[1]) for x in out]
+        all_test_acc = [float(x.split(' ')[5].split('=')[1]) for x in out]
         
         prep = ''
         if (int(depth) == -1):
@@ -41,7 +41,7 @@ for filename in os.listdir(results_dir):
         ax1.set_xlabel('epochs')
         ax1.set_ylabel('cross entropy')
         ax1.set_xlim([0, int(num_epochs)])
-        ax1.set_ylim([0, 1.05])
+        ax1.set_ylim([0, 1.4])
         ax1.legend()
         # plot accuracy development on the second
         ax2.plot(epochs,all_train_acc, label='train')
