@@ -1,6 +1,6 @@
 # AFLT Project-Dyck Self-Attention
 
-Project of the course Advanced Formal Language Theory offered in Spring 2022 (263-5352-00L). We seek to evaluate various solutions to overcoming the theoretical limitations of self-attention with respect to the hierarchical language Dyck.
+Project of the course Advanced Formal Language Theory offered in Spring 2022 (263-5352-00L). We reproduce the limited ability of transformers to recognize hierarchical languages and seek to evaluate various solutions to overcoming these limitations with respect to the hierarchical language Dyck.
 
 The theoretical limitations are discussed in [Hahn](https://arxiv.org/abs/1906.06755), while we attempted to adapt solutions proposed in [Chiang et al.](https://arxiv.org/abs/2202.12172).
 
@@ -8,7 +8,9 @@ The code is built upon/inspired by various existing implementations:
 - [Parity Implementation](https://github.com/ndnlp/parity)
 - [Transformer Implementation](https://github.com/satwik77/Transformer-Formal-Languages)
 
-Since Chiang et al. only applied their improvements for PARITY, we tried to adapt them for DYCK-2 in this project.
+Since Chiang et al. only applied their improvements for PARITY, we tried to adapt them for Dyck-languages in this project.
+
+A summary on the project can be found [here](https://polybox.ethz.ch/index.php/s/hR9GZCati1xPSPX).
 
 ## Visuals
 The DYCK-2 and PARITY languages are defined as follows (Visualization adapted from [Slides](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ) provided by Hahn):
@@ -16,7 +18,7 @@ The DYCK-2 and PARITY languages are defined as follows (Visualization adapted fr
 <img src="images/languages_dyck.JPG" alt="dyck-2" width="350"/>
 <img src="images/languages_parity.JPG" alt="parity" width="350"/>
 
-As we can see a 2 head, 2 layer network trying to recognise long DYCK-2 sequences (100 token) does not converge to a good accuracy or cross entropy. Different 
+As we can see in the following figure, a 2 head 2 layer network trying to recognise long DYCK-2 sequences (100 token) does not converge to a good accuracy or cross entropy. Different 
 from recognizing shorter sequences (10 token) with the same network, where fast convergence can be observed.
 
 ![img](src/results/result_150_2_2_100_-1_2_False.png)
@@ -71,6 +73,14 @@ Model Parameters
 | --scaled  | bool  | False   | Log-length scaled attention (only works if hard attention is not set to true) |
 | --eps     | float | 1e-5    | Value added to denominator in layer normalization                             |
 
+### Create Plots From Results
+You can create plots of train and test metrics for different word lengths by executing the corresponding script for the base experiments:
+```
+cd src
+python plot_results.py
+```
+When your results are not stored under `results/`, change the folder name in the file `plot_results.py`.
+
 ### Improved N-Dyck recognition
 Generate Dyck examples and train the improved model on N-dyck by executing
 ```
@@ -105,14 +115,14 @@ which has the same arguments as without layer normalization, and one addtional a
 |----------|-------|---------|---------------------------------------------------|
 | --eps    | float | 1e-5    | Value added to denominator in layer normalization |
 
-### Reproducting base experiments
+### Reproducing improved experiments
 To run the base experiments on the improved version of the transformer, run 
 ```
 cd src
 python improved_1dyck.py
 ```
 This runs the same experiment as in `base_1dyck.py` but with the improved transformer and <mark>without training</mark>.
-Similarly, you can run the base experiments for 1-Dyck with layer normalization (`improved_1dyck_ln.py`) and for (1,2)-Dyck without (`improved_1Ddyck.py`) and with layer normalization (`improved_1Ddyck_ln.py`).
+Similarly, you can run the base experiments for 1-Dyck with layer normalization (`improved_1dyck_ln.py`) and for (1,3)-Dyck without (`improved_1Ddyck.py`) and with layer normalization (`improved_1Ddyck_ln.py`).
 
 Precomputed results can be found in the corresponding results folders (`resultsImpr1Dyck/`, `resultsImpr1DyckLN/`, `resultsImpr13Dyck/`, `resultsImpr13DyckLN/`).
 
@@ -136,28 +146,4 @@ python dyck1d_exact_layernorm.py
 ```
 
 The arguments are the same as in the `dyck_exact` versions.
-
-### Create Plots From Results
-You can create plots of train and test metrics for different word lengths by executing the corresponding script for the base experiments:
-```
-cd src
-python plot_results.py
-```
-When your results are not stored under `results/`, change the folder name in the file `plot_results.py`.
-
-## TODO: Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## TODO: Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## TODO: Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## TODO: License
-For open source projects, say how it is licensed.
 
