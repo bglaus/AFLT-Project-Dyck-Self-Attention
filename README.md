@@ -10,7 +10,7 @@ The code is built upon/inspired by various existing implementations:
 
 Since Chiang et al. only applied their improvements for PARITY, we tried to adapt them for Dyck-languages in this project.
 
-A summary on the project can be found [here](https://polybox.ethz.ch/index.php/s/hR9GZCati1xPSPX).
+A summary on the project can be found under `Report/`. 
 
 ## Visuals
 The DYCK-2 and PARITY languages are defined as follows (Visualization adapted from [Slides](https://stanford.edu/~mhahn2/cgi-bin/files/acl2020-selfattention.pdf ) provided by Hahn):
